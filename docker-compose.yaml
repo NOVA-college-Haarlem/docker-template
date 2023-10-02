@@ -14,10 +14,10 @@ services:
   mariadb:
     image: mariadb:10.4
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: nova-hotel-22f
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_HOST: '%'
     ports:
       - "3307:3306"
