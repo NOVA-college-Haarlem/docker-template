@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./.docker/web/Dockerfile
+    volumes:
+      - ./www:/var/www/html
+      - ./vendor:/var/www/vendor
+    ports:
+      - "80:80"
+    depends_on:
+      - mariadb
+  mariadb:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nova-hotel-22f
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+  phpmyadmin:
+    build:
+      dockerfile: ./.docker/phpmyadmin/Dockerfile
+    ports:
+      - 8000:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mariadb
+    depends_on:
+      - mariadb
+volumes:
+  dbdata:
+
+
