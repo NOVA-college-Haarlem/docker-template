@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   web:
     build:
@@ -18,7 +18,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_HOST: "%"
     ports:
       - "3307:3306"
     volumes:
@@ -26,11 +26,10 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
   phpmyadmin:
-    build:
-      dockerfile: ./.docker/phpmyadmin/Dockerfile
+    image: phpmyadmin
     ports:
       - 8000:80
     environment:
@@ -38,7 +37,7 @@ services:
       - PMA_HOST=mariadb
     depends_on:
       - mariadb
+    volumes:
+      - ./.docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 volumes:
   dbdata:
-
-
