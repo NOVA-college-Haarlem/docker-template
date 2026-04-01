@@ -11,34 +11,49 @@ services:
     environment:
       - TZ=Europe/Amsterdam
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
   mariadb:
-    image: mariadb:10.4
+    image: mariadb:10.11
     environment:
-      - TZ=Europe/Amsterdam
-      MYSQL_ROOT_PASSWORD: password
+      TZ: Europe/Amsterdam
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_HOST: "%"
     ports:
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
-  mailhog:
-    image: mailhog/mailhog
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+  mailpit:
+    image: axllent/mailpit
     ports:
       - "1025:1025" # SMTP
       - "8025:8025" # Web UI
+    environment:
+      - TZ=Europe/Amsterdam
   phpmyadmin:
     image: phpmyadmin
     ports:
-      - 8000:80
+      - "8000:80"
     environment:
-      - PMA_ARBITRARY=1
+      - TZ=Europe/Amsterdam
+      - PMA_ARBITRARY=1 # allows connecting to any host — disable in non-local environments
       - PMA_HOST=mariadb
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
     volumes:
       - ./.docker/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
 volumes:
