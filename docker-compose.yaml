@@ -8,11 +8,14 @@ services:
       - ./vendor:/var/www/vendor
     ports:
       - "80:80"
+    environment:
+      - TZ=Europe/Amsterdam
     depends_on:
       - mariadb
   mariadb:
     image: mariadb:10.4
     environment:
+      - TZ=Europe/Amsterdam
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: user
